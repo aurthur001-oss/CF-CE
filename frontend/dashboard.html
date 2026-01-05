@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Celestial Fuels</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 text-slate-300 hidden md:block flex-shrink-0">
+            <div class="p-6">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 shadow-sm">
+                        <img src="logo.jpg" alt="Celestial Fuels Logo" class="w-full h-full object-cover">
+                    </div>
+                    <a href="index.html" class="font-bold text-lg text-slate-800">Celestial Fuels</a>
+                </div>
+                <nav class="space-y-2">
+                    <a href="index.html" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition">Home</a>
+                    <a href="#" class="block px-4 py-2 rounded-lg bg-slate-800 text-white font-medium">Overview</a>
+                    <a href="#" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition">My Listings</a>
+                    <a href="#" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition">Orders</a>
+                    <a href="#" class="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"
+                        onclick="logout()">Logout</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow">
+            <!-- Header -->
+            <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6">
+                <h1 class="font-bold text-xl text-slate-800" id="welcome-msg">Dashboard</h1>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-slate-500" id="user-company">Low Carbon Tech</span>
+                    <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold"
+                        id="user-initial">U</div>
+                </div>
+            </header>
+
+            <div class="p-6 max-w-7xl mx-auto">
+                <!-- Producer Tools (Hidden by default) -->
+                <div id="producer-section" class="hidden mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-200 bg-blue-50">
+                        <h3 class="font-bold text-blue-900 mb-4">Create New Listing</h3>
+                        <form id="listing-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-blue-900">Fuel Type</label>
+                                <select id="fuel_type" class="w-full border-slate-300 rounded-md p-2">
+                                    <option value="GREEN_HYDROGEN">Green Hydrogen</option>
+                                    <option value="CBG">CBG</option>
+                                    <option value="AMMONIA">Green Ammonia</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-blue-900">Price per Unit ($)</label>
+                                <input type="number" step="0.01" id="price" required
+                                    class="w-full border-slate-300 rounded-md p-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-blue-900">Available Qty (kg)</label>
+                                <input type="number" id="qty" required class="w-full border-slate-300 rounded-md p-2">
+                            </div>
+                            <!-- Hidden facility ID for MVP (default 1) -->
+                            <input type="hidden" id="facility_id" value="1">
+
+                            <div class="md:col-span-3">
+                                <button type="submit"
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700">Publish
+                                    Listing</button>
+                            </div>
+                        </form>
+                        <div id="listing-msg" class="text-sm mt-2 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="text-sm text-slate-500 mb-1">Role</div>
+                        <div class="text-2xl font-bold text-slate-900" id="user-role">Loading...</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="text-sm text-slate-500 mb-1">Status</div>
+                        <div class="text-2xl font-bold text-green-600">Active</div>
+                        <div class="text-xs text-slate-400 mt-2">KYC Verified</div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800">Recent Orders</h3>
+                    </div>
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-50 text-slate-500 font-medium">
+                            <tr>
+                                <th class="px-6 py-3">Order ID</th>
+                                <th class="px-6 py-3">Quantity</th>
+                                <th class="px-6 py-3">Total Price</th>
+                                <th class="px-6 py-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="orders-table">
+                            <tr>
+                                <td colspan="4" class="px-6 py-4 text-center">Loading orders...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        async function initDashboard() {
+            try {
+                // Get User Info from LocalStorage (or fetch again if needed)
+                let user = JSON.parse(localStorage.getItem('user'));
+                if (!user) {
+                    // Fallback fetch
+                    const res = await fetch('/users/me', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) user = await res.json();
+                    else window.location.href = 'login.html';
+                }
+
+                document.getElementById('welcome-msg').innerText = `Welcome, ${user.name}`;
+                document.getElementById('user-company').innerText = user.company_name || user.email;
+                document.getElementById('user-initial').innerText = user.name.charAt(0).toUpperCase();
+                document.getElementById('user-role').innerText = user.role;
+
+                // Load Orders
+                const ordersRes = await fetch(`/users/${user.id}/orders`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (ordersRes.ok) {
+                    const orders = await ordersRes.json();
+                    const tbody = document.getElementById('orders-table');
+                    tbody.innerHTML = '';
+
+                    if (orders.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center">No active orders found.</td></tr>';
+                    }
+
+                    orders.forEach(order => {
+                        const row = `
+                            <tr>
+                                <td class="px-6 py-4">#${order.id}</td>
+                                <td class="px-6 py-4">${order.quantity} units</td>
+                                <td class="px-6 py-4">$${order.total_price}</td>
+                                <td class="px-6 py-4">
+                                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">${order.status}</span>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+                }
+
+                // Producer Logic
+                if (user.role === 'PRODUCER') {
+                    document.getElementById('producer-section').classList.remove('hidden');
+
+                    document.getElementById('listing-form').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const payload = {
+                            fuel_type: document.getElementById('fuel_type').value,
+                            price_per_unit: parseFloat(document.getElementById('price').value),
+                            available_quantity: parseFloat(document.getElementById('qty').value),
+                            facility_id: 1, // Mock
+                            purity_percentage: 99.9,
+                            pressure_bar: 350,
+                            carbon_intensity: 0.5
+                        };
+
+                        try {
+                            const res = await fetch('/listings/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                                body: JSON.stringify(payload)
+                            });
+
+                            if (res.ok) {
+                                document.getElementById('listing-msg').innerText = "Listing Published!";
+                                document.getElementById('listing-msg').className = "text-sm mt-2 text-green-600";
+                                document.getElementById('listing-msg').classList.remove('hidden');
+                                e.target.reset();
+                            } else {
+                                const err = await res.json();
+                                document.getElementById('listing-msg').innerText = "Error: " + err.detail;
+                                document.getElementById('listing-msg').className = "text-sm mt-2 text-red-600";
+                                document.getElementById('listing-msg').classList.remove('hidden');
+                            }
+                        } catch (err) { console.error(err); }
+                    });
+                }
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        initDashboard();
+    </script>
+</body>
+
+</html>

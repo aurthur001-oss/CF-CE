@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+
+# Data
+*.db
+
+# Temporary
+temp_git/
+.gemini/
+.system_generated/

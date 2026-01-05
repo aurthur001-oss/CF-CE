@@ -1,0 +1,25 @@
+services:
+  # Backend service
+  - type: web
+    name: celestial-fuels-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./marketplace_v4.db # Change to PostgreSQL in production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: "*"
+
+  # Frontend service (Static)
+  - type: static
+    name: celestial-fuels-frontend
+    publishPath: frontend
+    envVars:
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: celestial-fuels-backend
+          property: host

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Celestial Fuels</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+    </style>
+    <script src="config.js"></script>
+</head>
+
+<body class="bg-slate-50 min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="flex justify-center mb-6">
+            <a href="index.html"
+                class="w-16 h-16 bg-white rounded-lg flex items-center justify-center overflow-hidden shadow-lg hover:scale-105 transition border border-slate-100 p-1">
+                <img src="logo.jpg" alt="Celestial Fuels Logo" class="w-full h-full object-cover">
+            </a>
+        </div>
+        <h2 class="text-center text-3xl font-extrabold text-slate-900">Create your account</h2>
+        <p class="mt-2 text-center text-sm text-slate-600">
+            Join the global energy marketplace
+        </p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+        <div class="bg-white py-8 px-8 shadow sm:rounded-lg border border-slate-200">
+            <!-- Progress Steps -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center">
+                    <div id="step-1-indicator"
+                        class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
+                        1</div>
+                    <span class="ml-2 text-sm font-medium text-blue-600">Basic</span>
+                </div>
+                <div class="w-16 h-0.5 bg-slate-200"></div>
+                <div class="flex items-center">
+                    <div id="step-2-indicator"
+                        class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-sm">
+                        2</div>
+                    <span class="ml-2 text-sm font-medium text-slate-500">Org</span>
+                </div>
+                <div class="w-16 h-0.5 bg-slate-200"></div>
+                <div class="flex items-center">
+                    <div id="step-3-indicator"
+                        class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-sm">
+                        3</div>
+                    <span class="ml-2 text-sm font-medium text-slate-500">Compliance</span>
+                </div>
+            </div>
+
+            <form id="signup-form" class="space-y-6">
+                <!-- STEP 1: Basic Info -->
+                <div id="step-1" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Full Name</label>
+                        <input type="text" id="name" required
+                            class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Business Email</label>
+                        <input type="email" id="email" required
+                            class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Password</label>
+                        <input type="password" id="password" required
+                            class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <p class="text-xs text-slate-500 mt-1">Must be at least 8 characters.</p>
+                    </div>
+                    <button type="button" onclick="nextStep(2)"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Next:
+                        Organization Details</button>
+                </div>
+
+                <!-- STEP 2: Org Details -->
+                <div id="step-2" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">I want to join as a:</label>
+                        <select id="role"
+                            class="block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="BUYER">Buyer (Industrial / Utility)</option>
+                            <option value="PRODUCER">Producer (H2 / CBG / SAF)</option>
+                            <option value="LOGISTICS">Logistics Provider</option>
+                            <option value="REGULATOR">Regulator / Auditor</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Company Name</label>
+                        <input type="text" id="company_name" required
+                            class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Industry Type</label>
+                        <select id="industry_type"
+                            class="block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="Energy">Energy & Power</option>
+                            <option value="Chemicals">Chemicals & Fertilizers</option>
+                            <option value="Steel">Steel & Metals</option>
+                            <option value="Mobility">Mobility & Transport</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Country</label>
+                            <input type="text" id="country" value="India"
+                                class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Region/State</label>
+                            <input type="text" id="region"
+                                class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <button type="button" onclick="nextStep(1)"
+                            class="w-1/3 flex justify-center py-2 px-4 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50">Back</button>
+                        <button type="button" onclick="nextStep(3)"
+                            class="w-2/3 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">Next:
+                            Compliance</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Compliance -->
+                <div id="step-3" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Registration / Tax ID</label>
+                        <input type="text" id="registration_number"
+                            class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Company Website</label>
+                        <input type="url" id="company_website" placeholder="https://"
+                            class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Contact Number</label>
+                        <input type="tel" id="contact_number"
+                            class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+
+                    <div class="flex items-start">
+                        <input id="terms" type="checkbox" required
+                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded mt-1">
+                        <label for="terms" class="ml-2 block text-sm text-slate-600">
+                            I agree to the <a href="#" class="text-blue-600 hover:text-blue-500">Terms of Service</a>
+                            and <a href="#" class="text-blue-600 hover:text-blue-500">Privacy Policy</a>. I certify that
+                            my organization is a compliant legal entity.
+                        </label>
+                    </div>
+
+                    <div id="error-msg" class="text-red-600 text-sm hidden"></div>
+
+                    <div class="flex gap-4">
+                        <button type="button" onclick="nextStep(2)"
+                            class="w-1/3 flex justify-center py-2 px-4 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50">Back</button>
+                        <button type="submit"
+                            class="w-2/3 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">Create
+                            Account</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function nextStep(step) {
+            document.querySelectorAll('[id^="step-"]').forEach(el => {
+                if (el.tagName === 'DIV' && el.classList.contains('space-y-4')) el.classList.add('hidden');
+            });
+            document.getElementById(`step-${step}`).classList.remove('hidden');
+
+            // Update indicators
+            for (let i = 1; i <= 3; i++) {
+                const ind = document.getElementById(`step-${i}-indicator`);
+                if (i <= step) {
+                    ind.classList.remove('bg-slate-200', 'text-slate-500');
+                    ind.classList.add('bg-blue-600', 'text-white');
+                } else {
+                    ind.classList.add('bg-slate-200', 'text-slate-500');
+                    ind.classList.remove('bg-blue-600', 'text-white');
+                }
+            }
+        }
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const terms = document.getElementById('terms').checked;
+            if (!terms) {
+                alert("Please accept the terms.");
+                return;
+            }
+
+            const payload = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value,
+                company_name: document.getElementById('company_name').value,
+                industry_type: document.getElementById('industry_type').value,
+                country: document.getElementById('country').value,
+                region: document.getElementById('region').value,
+                registration_number: document.getElementById('registration_number').value,
+                company_website: document.getElementById('company_website').value,
+                contact_number: document.getElementById('contact_number').value,
+                terms_accepted: true
+            };
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/users/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    window.location.href = 'index.html?signup_success=true';
+                } else {
+                    const err = await res.json();
+                    document.getElementById('error-msg').innerText = err.detail || 'Registration failed';
+                    document.getElementById('error-msg').classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('error-msg').innerText = 'Connection error';
+                document.getElementById('error-msg').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>
