@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --cosmic-bg: #030712;
+    /* Deepest space black */
+    --cosmic-card: #111827;
+    /* Dark gray */
+    --neon-green: #00ff9d;
+    /* Cyan-Green for H2 */
+    --neon-blue: #0ea5e9;
+    /* Sky blue */
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(17, 24, 39, 0.7);
+}
+
+body {
+    margin: 0;
+    display: flex;
+    place-items: center;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: var(--cosmic-bg);
+    color: #f3f4f6;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+}
+
+.text-glow {
+    text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+}
+
+.text-gradient {
+    background: linear-gradient(to right, var(--neon-green), var(--neon-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

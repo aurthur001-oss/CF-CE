@@ -133,3 +133,137 @@ class LoginHistory(LoginHistoryBase):
     login_at: datetime
     class Config:
         orm_mode = True
+
+# --- Trading Schemas ---
+class TradeOrderBase(BaseModel):
+    order_type: str # BUY / SELL
+    fuel_type: str
+    quantity: float
+    price_per_unit: float
+
+class TradeOrderCreate(TradeOrderBase):
+    pass
+
+class TradeOrder(TradeOrderBase):
+    id: int
+    user_id: int
+    anonymous_id: str
+    status: str
+    created_at: datetime
+    class Config:
+        orm_mode = True
+
+class TradeTransactionBase(BaseModel):
+    quantity: float
+    price_per_unit: float
+    total_amount: float
+
+class TradeTransaction(TradeTransactionBase):
+    id: int
+    buyer_order_id: int
+    seller_order_id: int
+    execution_time: datetime
+    class Config:
+        orm_mode = True
+
+# --- Storage Schemas ---
+class StorageListingBase(BaseModel):
+    capacity_available: float
+    price_per_day: float
+    min_duration_days: int = 1
+    is_active: bool = True
+
+class StorageListingCreate(StorageListingBase):
+    facility_id: int
+
+class StorageListing(StorageListingBase):
+    id: int
+    facility_id: int
+    owner_id: int
+    created_at: datetime
+    facility: Optional[Facility] = None
+    class Config:
+        orm_mode = True
+
+class StorageBookingBase(BaseModel):
+    listing_id: int
+    start_date: datetime
+    end_date: datetime
+
+class StorageBookingCreate(StorageBookingBase):
+    pass
+
+class StorageBooking(StorageBookingBase):
+    id: int
+    renter_id: int
+    total_price: float
+    status: str
+    class Config:
+        orm_mode = True
+
+# --- Marketplace Schemas ---
+class MarketplaceItemBase(BaseModel):
+    name: str
+    category: str
+    description: str
+    price: float
+    stock_quantity: int
+    image_url: Optional[str] = None
+
+class MarketplaceItemCreate(MarketplaceItemBase):
+    pass
+
+class MarketplaceItem(MarketplaceItemBase):
+    id: int
+    seller_id: int
+    created_at: datetime
+    class Config:
+        orm_mode = True
+
+class MarketplaceOrderBase(BaseModel):
+    item_id: int
+    quantity: int
+
+class MarketplaceOrderCreate(MarketplaceOrderBase):
+    pass
+
+class MarketplaceOrder(MarketplaceOrderBase):
+    id: int
+    buyer_id: int
+    total_price: float
+    status: str
+    order_date: datetime
+    class Config:
+        orm_mode = True
+
+# --- Auth Flow (Signup) Schemas ---
+class SignupStep1Request(BaseModel):
+    email: str
+    phone: str
+
+class SignupStep1Response(BaseModel):
+    email: str
+    phone: str
+    message: str
+
+class VerifyOTPRequest(BaseModel):
+    email: str
+    otp: str
+
+class VerifyOTPResponse(BaseModel):
+    verified: bool
+    temp_token: str
+
+class KYCComplaintRequest(BaseModel):
+    temp_token: str
+    full_name: str
+    role: str
+    company_name: str
+    document_id: str
+    terms_accepted: bool
+    password: str
+
+class SignupCompleteResponse(BaseModel):
+    user: Participant
+    access_token: str
+    token_type: str
