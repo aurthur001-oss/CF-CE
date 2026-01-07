@@ -125,14 +125,13 @@ const Signup: React.FC = () => {
                     {/* Logo */}
                     <div className="flex justify-center mb-6">
                         <Link to="/" className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                                <Zap className="w-5 h-5 text-white" />
+                            <div className="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden">
+                                <img src="/logo.png" alt="CF-EnergX Logo" className="w-full h-full object-contain" />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-xl font-bold text-white tracking-tight">
-                                    Energy<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">X</span>
+                                    CF-Energ<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">X</span>
                                 </span>
-                                <span className="text-[9px] text-slate-500 uppercase tracking-wider font-medium -mt-1">by Celestial Fuels</span>
                             </div>
                         </Link>
                     </div>
@@ -152,8 +151,8 @@ const Signup: React.FC = () => {
                         ].map(s => (
                             <div key={s.num} className="flex flex-col items-center gap-1">
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-colors duration-300 ${step >= s.num
-                                        ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30'
-                                        : 'bg-slate-800 text-slate-500 border border-slate-700'
+                                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30'
+                                    : 'bg-slate-800 text-slate-500 border border-slate-700'
                                     }`}>
                                     {step > s.num ? <CheckCircle size={18} /> : <s.icon size={18} />}
                                 </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, LogOut, Zap } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
@@ -15,14 +15,14 @@ const Navbar: React.FC = () => {
                     {/* Logo Section */}
                     <div className="flex items-center gap-3">
                         <Link to="/" className="flex items-center gap-3 group">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:shadow-emerald-500/50 transition-shadow">
-                                <Zap className="w-5 h-5 text-white" />
+                            {/* Replaced Icon with Logo Image */}
+                            <div className="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden">
+                                <img src="/logo.png" alt="CF-EnergX Logo" className="w-full h-full object-contain" />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-xl font-bold text-white tracking-tight">
-                                    Energy<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">X</span>
+                                    CF-Energ<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">X</span>
                                 </span>
-                                <span className="text-[9px] text-slate-500 uppercase tracking-wider font-medium -mt-1">by Celestial Fuels</span>
                             </div>
                         </Link>
                     </div>
@@ -40,12 +40,20 @@ const Navbar: React.FC = () => {
                                 Marketplace
                             </Link>
 
+                            {/* Admin Link - Only for Admin Users */}
+                            {user && user.role === 'ADMIN' && (
+                                <Link to="/admin" className="text-slate-300 hover:text-red-400 hover:bg-slate-800/50 px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                                    Admin
+                                </Link>
+                            )}
+
+
                             {user ? (
                                 <div className="flex items-center gap-4 ml-6 pl-6 border-l border-slate-700">
-                                    <div className="text-right">
+                                    <Link to="/profile" className="text-right hover:opacity-80 transition-opacity">
                                         <div className="text-sm font-medium text-white">{user.name || user.email.split('@')[0]}</div>
                                         <div className="text-xs text-slate-500">{user.role || 'Trader'}</div>
-                                    </div>
+                                    </Link>
                                     <button
                                         onClick={logout}
                                         className="flex items-center gap-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-all text-sm font-medium border border-red-500/20"
@@ -97,14 +105,27 @@ const Navbar: React.FC = () => {
                         <Link to="/marketplace" className="text-slate-300 hover:text-white hover:bg-slate-800 block px-4 py-3 rounded-lg text-base font-medium transition-colors">
                             Marketplace
                         </Link>
+
+                        {/* Admin Link - Only for Admin Users */}
+                        {user && user.role === 'ADMIN' && (
+                            <Link to="/admin" className="text-slate-300 hover:text-white hover:bg-slate-800 block px-4 py-3 rounded-lg text-base font-medium transition-colors">
+                                Admin Dashboard
+                            </Link>
+                        )}
+
                         <div className="pt-4 border-t border-slate-800 mt-4">
                             {user ? (
-                                <button
-                                    onClick={logout}
-                                    className="w-full text-left text-red-400 hover:bg-red-500/10 block px-4 py-3 rounded-lg text-base font-medium transition-colors"
-                                >
-                                    Sign Out
-                                </button>
+                                <>
+                                    <Link to="/profile" className="text-slate-300 hover:text-white block px-4 py-3 rounded-lg text-base font-medium transition-colors">
+                                        My Profile
+                                    </Link>
+                                    <button
+                                        onClick={logout}
+                                        className="w-full text-left text-red-400 hover:bg-red-500/10 block px-4 py-3 rounded-lg text-base font-medium transition-colors"
+                                    >
+                                        Sign Out
+                                    </button>
+                                </>
                             ) : (
                                 <div className="space-y-2">
                                     <Link to="/login" className="text-slate-300 hover:text-white block px-4 py-3 rounded-lg text-base font-medium transition-colors">

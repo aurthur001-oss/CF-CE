@@ -60,6 +60,7 @@ class Participant(Base):
     registration_number = Column(String) # NEW
     company_website = Column(String) # NEW
     contact_number = Column(String) # NEW
+    wallet_balance = Column(Float, default=0.0) # Wallet Feature
     kyc_verified = Column(Boolean, default=False)
     terms_accepted = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
@@ -71,6 +72,7 @@ class Participant(Base):
     orders_placed = relationship("Order", back_populates="buyer", foreign_keys="Order.buyer_id")
     orders_received = relationship("Order", back_populates="seller", foreign_keys="Order.seller_id")
     logistics_assets = relationship("LogisticsAsset", back_populates="provider")
+    inventory = relationship("Inventory", back_populates="owner")
 
 class Facility(Base):
     """Production Plant, Storage Hub, or Warehouse"""
@@ -278,3 +280,14 @@ class MarketplaceOrder(Base):
     
     item = relationship("MarketplaceItem")
     buyer = relationship("Participant")
+
+class Inventory(Base):
+    __tablename__ = "inventory"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("participants.id"))
+    fuel_type = Column(String) # FuelType Enum
+    quantity = Column(Float, default=0.0)
+    last_updated = Column(DateTime, default=datetime.utcnow)
+
+    owner = relationship("Participant", back_populates="inventory")

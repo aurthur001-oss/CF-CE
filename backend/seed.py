@@ -206,6 +206,7 @@ def seed_data():
             terms_accepted=True,
             is_active=True,
             is_approved=random.random() > 0.05,
+            wallet_balance=round(random.uniform(5000000, 500000000), 2), # $5M - $500M
         )
         db.add(user)
         if i % 100 == 99:
@@ -235,6 +236,7 @@ def seed_data():
             terms_accepted=True,
             is_active=True,
             is_approved=random.random() > 0.05,
+            wallet_balance=round(random.uniform(10000000, 1000000000), 2), # $10M - $1B
         )
         db.add(user)
         if i % 100 == 99:
@@ -306,7 +308,30 @@ def seed_data():
     
     db.commit()
     all_facilities = db.query(models.Facility).all()
+    db.commit()
+    all_facilities = db.query(models.Facility).all()
     print(f"   ✓ Created {len(all_facilities)} facilities")
+
+    # ============================================
+    # INVENTORY (For Producers/Logistics) - NEW
+    # ============================================
+    print("\n[-] Creating Inventory Records...")
+    inventory_items = 0
+    for user_type, user in all_participants:
+        if user_type in ["PRODUCER", "LOGISTICS"]:
+            # Give them some initial stock
+            num_fuels = random.randint(1, 4)
+            for _ in range(num_fuels):
+                inv = models.Inventory(
+                    user_id=user.id,
+                    fuel_type=random.choice(FUEL_TYPES[:8]),
+                    quantity=random.uniform(1000, 50000), # kg
+                    last_updated=datetime.utcnow()
+                )
+                db.add(inv)
+                inventory_items += 1
+    db.commit()
+    print(f"   ✓ Created {inventory_items} inventory records")
     
     # ============================================
     # PRODUCT LISTINGS (300+)

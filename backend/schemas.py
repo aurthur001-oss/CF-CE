@@ -23,6 +23,18 @@ class FuelType(str, Enum):
     TURQUOISE_HYDROGEN = "TURQUOISE_HYDROGEN"
     PINK_HYDROGEN = "PINK_HYDROGEN"
 
+# --- Inventory Schema ---
+class InventoryBase(BaseModel):
+    fuel_type: str
+    quantity: float
+
+class Inventory(InventoryBase):
+    id: int
+    user_id: int
+    last_updated: datetime
+    class Config:
+        orm_mode = True
+
 # --- Participant Schemas ---
 class ParticipantBase(BaseModel):
     name: str
@@ -31,6 +43,7 @@ class ParticipantBase(BaseModel):
     company_name: Optional[str] = None
     industry_type: Optional[str] = None
     region: Optional[str] = None
+    wallet_balance: float = 0.0
 
 class ParticipantCreate(ParticipantBase):
     password: str
@@ -46,6 +59,9 @@ class Participant(ParticipantBase):
     id: int
     class Config:
         orm_mode = True
+
+class ParticipantDetail(Participant):
+    inventory: List[Inventory] = []
 
 class Token(BaseModel):
     access_token: str
@@ -267,3 +283,16 @@ class SignupCompleteResponse(BaseModel):
     user: Participant
     access_token: str
     token_type: str
+
+# --- Admin Schemas ---
+class AdminAnalytics(BaseModel):
+    total_users: int
+    total_producers: int
+    total_buyers: int
+    total_listings: int
+    total_trades_volume: float
+    pending_approvals: int
+
+class UserStatusUpdate(BaseModel):
+    is_active: Optional[bool] = None
+    is_approved: Optional[bool] = None

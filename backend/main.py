@@ -11,19 +11,20 @@ import os
 import models, schemas, crud, auth, em_models, em_schemas # Added em_models
 from database import SessionLocal, engine
 import logging
-from routers import trading, storage, marketplace, auth_flow
+from routers import trading, storage, marketplace, auth_flow, admin
 
 # Create tables for both MVP and EM Data
 models.Base.metadata.create_all(bind=engine)
 em_models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Celestial Fuels - H2 & CBG Marketplace")
+app = FastAPI(title="CF-EnergX - H2 & CBG Marketplace")
 
 # Include Routers
 app.include_router(trading.router)
 app.include_router(storage.router)
 app.include_router(marketplace.router)
 app.include_router(auth_flow.router)
+app.include_router(admin.router)
 
 # Enable CORS for frontend
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
@@ -160,7 +161,7 @@ async def get_current_user(token: str = Depends(OAuth2PasswordBearer(tokenUrl="t
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@app.get("/users/me", response_model=schemas.Participant)
+@app.get("/users/me", response_model=schemas.ParticipantDetail)
 async def read_users_me(current_user: schemas.Participant = Depends(get_current_user)):
     return current_user
 

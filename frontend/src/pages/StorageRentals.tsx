@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { Warehouse, MapPin, Calendar, Lock, Globe, Shield, Filter, ChevronRight } from 'lucide-react';
+import { Warehouse, MapPin, Calendar, Lock, Shield, Filter, ChevronRight, Layers } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+// Leaflet CSS is imported in global setup now.
+
 
 interface StorageListing {
     id: number;
@@ -20,51 +23,32 @@ interface StorageListing {
     };
 }
 
-// Static map component (no API needed)
-const LocationMap: React.FC<{ lat?: number; lng?: number; name: string }> = ({ lat, lng, name }) => {
-    if (!lat || !lng) return null;
+// Component to handle map events and update bounds
+const MapController: React.FC<{ onBoundsChange: (bounds: L.LatLngBounds) => void }> = ({ onBoundsChange }) => {
+    const map = useMapEvents({
+        moveend: () => {
+            onBoundsChange(map.getBounds());
+        },
+        zoomend: () => {
+            onBoundsChange(map.getBounds());
+        }
+    });
 
-    // Calculate position on a simple grid map
-    const xPos = ((lng + 180) / 360) * 100;
-    const yPos = ((90 - lat) / 180) * 100;
+    // Trigger initial bounds calculation
+    useEffect(() => {
+        onBoundsChange(map.getBounds());
+    }, [map, onBoundsChange]);
 
-    return (
-        <div className="relative w-full h-32 bg-slate-800 rounded-lg overflow-hidden">
-            {/* Grid Background */}
-            <div className="absolute inset-0 opacity-20">
-                <div className="w-full h-full" style={{
-                    backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)',
-                    backgroundSize: '20% 20%'
-                }}></div>
-            </div>
-
-            {/* Location Marker */}
-            <div
-                className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10"
-                style={{ left: `${Math.min(Math.max(xPos, 10), 90)}%`, top: `${Math.min(Math.max(yPos, 20), 80)}%` }}
-            >
-                <div className="relative">
-                    <div className="w-4 h-4 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50 animate-pulse"></div>
-                    <div className="absolute -top-1 -left-1 w-6 h-6 bg-emerald-500/30 rounded-full animate-ping"></div>
-                </div>
-            </div>
-
-            {/* Coordinates Display */}
-            <div className="absolute bottom-2 left-2 bg-slate-900/80 px-2 py-1 rounded text-xs font-mono text-slate-400">
-                {lat.toFixed(2)}°N, {lng.toFixed(2)}°E
-            </div>
-
-            {/* Region Label */}
-            <div className="absolute top-2 right-2 bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded text-xs font-semibold">
-                <Globe className="w-3 h-3 inline mr-1" />
-                {name.split(',')[0]}
-            </div>
-        </div>
-    );
+    return null;
 };
 
 const StorageRentals = () => {
     const { isAuthenticated } = useAuth();
+    const [listings, setListings] = useState<StorageListing[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [filterRegion, setFilterRegion] = useState('ALL');
+    const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null);
+    const [activeListingId, setActiveListingId] = useState<number | null>(null);
 
     // Public Preview
     if (!isAuthenticated) {
@@ -121,11 +105,6 @@ const StorageRentals = () => {
         );
     }
 
-    // Authenticated View
-    const [listings, setListings] = useState<StorageListing[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [filterRegion, setFilterRegion] = useState('ALL');
-
     const fetchListings = async () => {
         try {
             const response = await axios.get('http://localhost:8000/storage/listings/');
@@ -173,32 +152,91 @@ const StorageRentals = () => {
     };
 
     const regions = ['ALL', ...new Set(listings.map(l => l.facility?.location_address?.split(',').pop()?.trim() || 'Unknown'))];
-    const filteredListings = filterRegion === 'ALL' ? listings : listings.filter(l => l.facility?.location_address?.includes(filterRegion));
+
+    // Combined Filtering: Region + Map Bounds
+    const filteredListings = listings.filter(l => {
+        const matchesRegion = filterRegion === 'ALL' || l.facility?.location_address?.includes(filterRegion);
+
+        // Check map bounds
+        let matchesMap = true;
+        if (mapBounds && l.facility?.location_lat && l.facility?.location_lng) {
+            const latLng = L.latLng(l.facility.location_lat, l.facility.location_lng);
+            matchesMap = mapBounds.contains(latLng);
+        }
+
+        return matchesRegion && matchesMap;
+    });
 
     return (
-        <div className="pt-20 min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white p-4 md:p-8">
-            <div className="max-w-7xl mx-auto">
+        <div className="pt-20 min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
+            {/* Map Container - Top Half */}
+            <div className="h-[50vh] w-full relative z-0">
+                <MapContainer
+                    center={[25, 10]}
+                    zoom={2}
+                    scrollWheelZoom={true}
+                    className="h-full w-full"
+                    style={{ background: '#020617' }} // Matches slate-950
+                >
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                    />
+
+                    <MapController onBoundsChange={setMapBounds} />
+
+                    {/* Markers for ALL listings (so you can see what is available outside bounds too, or maybe just filtered? typical is filtered based on viewport, so markers stay) */}
+                    {/* Actually, markers should probably represent the filtered list OR all list. 
+                        If we filter by bounds, we should probably render markers for ALL listings so users know where to pan.
+                        BUT, if we want "map as filter", then list updates. 
+                        Let's render active bounds markers.
+                    */}
+                    {listings.map((l) => (
+                        l.facility?.location_lat && l.facility?.location_lng && (
+                            <Marker
+                                key={l.id}
+                                position={[l.facility.location_lat, l.facility.location_lng]}
+                                eventHandlers={{
+                                    click: () => setActiveListingId(l.id)
+                                }}
+                            >
+                                <Popup className="text-slate-900">
+                                    <div className="p-1">
+                                        <div className="font-bold">{l.facility.name}</div>
+                                        <div className="text-xs">{l.facility.type}</div>
+                                        <div className="text-xs font-mono mt-1 text-emerald-600">${l.price_per_day}/day</div>
+                                    </div>
+                                </Popup>
+                            </Marker>
+                        )
+                    ))}
+                </MapContainer>
+
+                {/* Floating Map Overlay Info */}
+                <div className="absolute top-4 right-4 z-[400] bg-slate-900/90 backdrop-blur-md p-3 rounded-lg border border-slate-700 shadow-xl">
+                    <div className="text-xs text-slate-400 uppercase tracking-wider font-bold mb-1">Map Filter Active</div>
+                    <div className="text-sm font-semibold flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-emerald-400" />
+                        Showing {filteredListings.length} facilities in view
+                    </div>
+                </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 py-8">
                 {/* Header */}
-                <header className="mb-10">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                        <div>
-                            <h1 className="text-4xl font-bold mb-2">Storage Network</h1>
-                            <p className="text-slate-400">
-                                Find and book certified clean energy storage facilities worldwide
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-3 bg-blue-500/10 border border-blue-500/20 px-4 py-2 rounded-lg">
-                            <Shield className="w-5 h-5 text-blue-400" />
-                            <span className="text-blue-400 text-sm font-semibold">{listings.length} Facilities Available</span>
-                        </div>
+                <header className="mb-8 flex flex-col md:flex-row justify-between items-end gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold mb-2">Available Storage</h1>
+                        <p className="text-slate-400 text-sm">
+                            Pan and zoom the map above to filter results by location.
+                        </p>
                     </div>
 
-                    {/* Filter */}
-                    <div className="flex items-center gap-4 bg-slate-900/80 border border-slate-800 rounded-xl p-4">
-                        <Filter className="w-5 h-5 text-slate-400" />
-                        <span className="text-sm text-slate-400">Region:</span>
+                    {/* Region Fallback Filter */}
+                    <div className="flex items-center gap-4 bg-slate-900/80 border border-slate-800 rounded-xl p-3">
+                        <Filter className="w-4 h-4 text-slate-400" />
                         <select
-                            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500"
                             value={filterRegion}
                             onChange={(e) => setFilterRegion(e.target.value)}
                         >
@@ -213,28 +251,31 @@ const StorageRentals = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {loading ? (
                         <div className="col-span-3 text-center py-20 text-slate-500">Loading facilities...</div>
+                    ) : filteredListings.length === 0 ? (
+                        <div className="col-span-3 text-center py-20 bg-slate-900/50 rounded-2xl border border-slate-800 border-dashed">
+                            <MapPin className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+                            <h3 className="text-xl font-bold text-slate-400">No facilities in this area</h3>
+                            <p className="text-slate-500">Try zooming out or moving the map to finding more locations.</p>
+                        </div>
                     ) : (
                         filteredListings.map((listing) => (
                             <motion.div
                                 key={listing.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                whileHover={{ y: -5 }}
-                                className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden hover:border-blue-500/30 transition-all group"
+                                layout
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                className={`bg-slate-900/80 border rounded-2xl overflow-hidden transition-all group ${activeListingId === listing.id ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-800 hover:border-blue-500/30'}`}
+                                onMouseEnter={() => setActiveListingId(listing.id)}
                             >
-                                {/* Location Map */}
-                                <LocationMap
-                                    lat={listing.facility?.location_lat}
-                                    lng={listing.facility?.location_lng}
-                                    name={listing.facility?.location_address || 'Unknown'}
-                                />
-
                                 <div className="p-6">
                                     {/* Facility Type Badge */}
-                                    <div className="inline-flex items-center gap-1 bg-blue-500/10 text-blue-400 text-xs font-semibold px-2 py-1 rounded mb-3">
-                                        <Warehouse className="w-3 h-3" />
-                                        {listing.facility?.type || 'Storage Facility'}
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className="inline-flex items-center gap-1 bg-blue-500/10 text-blue-400 text-xs font-semibold px-2 py-1 rounded">
+                                            <Warehouse className="w-3 h-3" />
+                                            {listing.facility?.type || 'Storage Facility'}
+                                        </div>
+                                        <div className="text-xs text-slate-500 font-mono">ID: {listing.facility_id}</div>
                                     </div>
 
                                     {/* Name */}

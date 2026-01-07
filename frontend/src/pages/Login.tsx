@@ -72,8 +72,10 @@ const Login = () => {
 
                     {/* Header */}
                     <div className="text-center mb-8">
-                        <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
-                        <p className="text-slate-400">Sign in to access your trading dashboard</p>
+                        <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
+                            Welcome Back
+                        </h1>
+                        <p className="text-slate-400 mt-2">Sign in to access CF-EnergX Trading Platform</p>
                     </div>
 
                     {/* Error Alert */}
@@ -81,7 +83,7 @@ const Login = () => {
                         <motion.div
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-sm"
+                            className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-3 text-red-400 text-sm"
                         >
                             <AlertCircle className="w-5 h-5 flex-shrink-0" />
                             {error}
@@ -89,32 +91,32 @@ const Login = () => {
                     )}
 
                     {/* Form */}
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-slate-400 mb-2">Email Address</label>
+                            <label className="block text-sm font-medium text-slate-400 mb-1">Email Address</label>
                             <div className="relative">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                                 <input
                                     type="email"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-12 pr-4 py-4 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                                    className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
                                     placeholder="name@company.com"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-slate-400 mb-2">Password</label>
+                            <label className="block text-sm font-medium text-slate-400 mb-1">Password</label>
                             <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                                 <input
                                     type="password"
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-12 pr-4 py-4 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                                    className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -123,7 +125,7 @@ const Login = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3 rounded-lg transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {isLoading ? (
                                 <>
@@ -136,28 +138,8 @@ const Login = () => {
                                 </>
                             )}
                         </button>
+                        {/* Removed dummy credentials display */}
                     </form>
-
-                    {/* Divider */}
-                    <div className="relative my-8">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-slate-800"></div>
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-slate-900 px-4 text-slate-500">Demo Credentials</span>
-                        </div>
-                    </div>
-
-                    {/* Demo Info */}
-                    <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-center">
-                        <p className="text-slate-400 text-sm mb-2">Use any demo account:</p>
-                        <div className="font-mono text-emerald-400 text-sm">
-                            lt_green@example.com
-                        </div>
-                        <div className="font-mono text-slate-300 text-sm">
-                            password123
-                        </div>
-                    </div>
 
                     {/* Sign Up Link */}
                     <div className="mt-8 text-center text-sm text-slate-400">
@@ -166,6 +148,8 @@ const Login = () => {
                             Create Account
                         </Link>
                     </div>
+
+
                 </div>
             </motion.div>
         </div>
